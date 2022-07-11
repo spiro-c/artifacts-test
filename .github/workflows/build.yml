@@ -17,7 +17,7 @@ on:
 env:
   GHCR_SLUG: ghcr.io/ledfx/ledfx_v3
   PLATFORMS: linux/amd64,linux/arm64
-  BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
+  BINARY_NAME: LedFx-${{ matrix.runner }}-${{ matrix.arch }}
 
 
 jobs:
@@ -26,43 +26,43 @@ jobs:
     strategy:
       matrix:
         include:
-          - runner: macos-latest
+          - os: macos-latest
             name: Macos-Build AMD64
-            os: darwin
+            runner: darwin
             arch: amd64
 
-          - runner: macos-latest
+          - os: macos-latest
             name: Macos-Build ARM64
-            os: darwin
+            runner: darwin
             arch: ARM64
 
-          - runner: ubuntu-latest
+          - os: ubuntu-latest
             name: Linux-Build AMD64
             platform: linux/amd64
-            os: linux
+            runner: linux
             arch: amd64
             
-          - runner: ubuntu-latest
+          - os: ubuntu-latest
             name: Linux-Build ARM64
             platform: linux/arm64
-            os: linux
+            runner: linux
             arch: arm64
                         
-          - runner: ubuntu-latest
+          - os: ubuntu-latest
             name: Linux-Build armhf
             platform: linux/arm/v7
-            os: armhf
+            runner: armhf
             arch: arm64
                     
-          - runner: ubuntu-latest
+          - os: ubuntu-latest
             name: Linux-Build armel
             platform: linux/arm/v6
-            os: linux
+            runner: linux
             arch: armel
                            
-          - runner: windows-latest
+          - os: windows-latest
             name: Windows-Build AMD64
-            os: windows
+            runner: windows
             arch: amd64
     
     steps:
