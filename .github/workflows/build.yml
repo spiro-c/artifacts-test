@@ -23,6 +23,7 @@ env:
 jobs:
   build:
     runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.name }}
     strategy:
       matrix:
         include:
@@ -67,6 +68,11 @@ jobs:
     
     steps:
 
+    - name: Set windows shell to msys
+      run:
+        shell: msys2 {0}
+      if: matrix.runner == 'windows-latest'
+      
     - name: Checkout Code
       uses: actions/checkout@v3
       with:
@@ -75,7 +81,7 @@ jobs:
       run: |
         BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
         echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
-        
+
     - name: Write Env
       run: |
         env
@@ -85,4 +91,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.BINARY_NAME }}-${{ github.sha }}
-        path: ${{ env.BINARY_NAME }}-${{ github.sha }}
+        path: ${{ env.BINARY_NAME }}
