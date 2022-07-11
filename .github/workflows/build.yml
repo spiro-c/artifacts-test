@@ -26,7 +26,7 @@ jobs:
     name: ${{ matrix.name }}
     defaults:
       run:
-        shell: ${{ matrix.shell }} {0}
+        shell: '${{ matrix.shell }} {0}'
     strategy:
       matrix:
         include:
@@ -85,7 +85,7 @@ jobs:
         submodules: true
     - name: Get Build Matrix Info and Set Variables
       run: |
-        BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
+        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
         echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
 
     - name: Write Env
