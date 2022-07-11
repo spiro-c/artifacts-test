@@ -1,36 +1,81 @@
-# This is a basic workflow to help you get started with Actions
+name: Build artifacts
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches:
+      - 'main'
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '**.md'
   pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
   workflow_dispatch:
+env:
+  GHCR_SLUG: ghcr.io/ledfx/ledfx_v3
+  PLATFORMS: linux/amd64,linux/arm64
+  BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - runner: macos-latest
+            name: Macos-Build AMD64
+            os: darwin
+            arch: amd64
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+          - runner: macos-latest
+            name: Macos-Build ARM64
+            os: darwin
+            arch: ARM64
+
+          - runner: ubuntu-latest
+            name: Linux-Build AMD64
+            platform: linux/amd64
+            os: linux
+            arch: amd64
+            
+          - runner: ubuntu-latest
+            name: Linux-Build ARM64
+            platform: linux/arm64
+            os: linux
+            arch: arm64
+                        
+          - runner: ubuntu-latest
+            name: Linux-Build armhf
+            platform: linux/arm/v7
+            os: armhf
+            arch: arm64
+                    
+          - runner: ubuntu-latest
+            name: Linux-Build armel
+            platform: linux/arm/v6
+            os: linux
+            arch: armel
+                           
+          - runner: windows-latest
+            name: Windows-Build AMD64
+            os: windows
+            arch: amd64
+    
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Write Env
+      run: |
+        env
+        printenv > $BINARY_NAME
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.BINARY_NAME }}-${{ github.sha }}
