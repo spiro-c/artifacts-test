@@ -14,9 +14,7 @@ on:
     paths-ignore:
       - '**.md'
   workflow_dispatch:
-env:
-  GHCR_SLUG: ghcr.io/ledfx/ledfx_v3
-  PLATFORMS: linux/amd64,linux/arm64
+
 #  BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
 
 
@@ -24,6 +22,10 @@ jobs:
   build:
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.name }}
+    env:
+      GHCR_SLUG: ghcr.io/ledfx/ledfx_v3
+      PLATFORMS: linux/amd64,linux/arm64
+      BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
     defaults:
       run:
         shell: '${{ matrix.shell }} {0}'
@@ -83,15 +85,15 @@ jobs:
       with:
         msystem: MINGW64
       if: matrix.runner == 'windows-latest'
-      
+
     - name: Checkout Code
       uses: actions/checkout@v3
       with:
         submodules: true
-    - name: Get Build Matrix Info and Set Variables
-      run: |
-        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
-        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+#    - name: Get Build Matrix Info and Set Variables
+#      run: |
+#        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
+#        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
 
     - name: Write Env
       run: |
