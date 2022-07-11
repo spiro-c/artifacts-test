@@ -17,7 +17,7 @@ on:
 env:
   GHCR_SLUG: ghcr.io/ledfx/ledfx_v3
   PLATFORMS: linux/amd64,linux/arm64
-  BINARY_NAME: LedFx-${{ matrix.runner }}-${{ matrix.arch }}
+#  BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
 
 
 jobs:
@@ -26,50 +26,56 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
+          - runner: macos-latest
             name: Macos-Build AMD64
-            runner: darwin
+            os: darwin
             arch: amd64
 
-          - os: macos-latest
+          - runner: macos-latest
             name: Macos-Build ARM64
-            runner: darwin
+            os: darwin
             arch: ARM64
 
-          - os: ubuntu-latest
+          - runner: ubuntu-latest
             name: Linux-Build AMD64
             platform: linux/amd64
-            runner: linux
+            os: linux
             arch: amd64
             
-          - os: ubuntu-latest
+          - runner: ubuntu-latest
             name: Linux-Build ARM64
             platform: linux/arm64
-            runner: linux
+            os: linux
             arch: arm64
                         
-          - os: ubuntu-latest
+          - runner: ubuntu-latest
             name: Linux-Build armhf
             platform: linux/arm/v7
-            runner: armhf
+            os: armhf
             arch: arm64
                     
-          - os: ubuntu-latest
+          - runner: ubuntu-latest
             name: Linux-Build armel
             platform: linux/arm/v6
-            runner: linux
+            os: linux
             arch: armel
                            
-          - os: windows-latest
+          - runner: windows-latest
             name: Windows-Build AMD64
-            runner: windows
+            os: windows
             arch: amd64
     
     steps:
+
     - name: Checkout Code
       uses: actions/checkout@v3
       with:
         submodules: true
+    - name: Get Build Matrix Info and Set Variables
+      run: |
+        BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
+        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+        
     - name: Write Env
       run: |
         env
@@ -79,3 +85,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.BINARY_NAME }}-${{ github.sha }}
+        path: ${{ env.BINARY_NAME }}-${{ github.sha }}
