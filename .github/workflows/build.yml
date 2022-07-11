@@ -77,7 +77,7 @@ jobs:
             shell: msys2
             os: windows
             arch: amd64
-    if: ${{ matrix.runner }} == 'windows-latest'
+    if: matrix.runner == 'windows-latest'
     steps:
 
     - name: Set up Build Environment 
@@ -105,9 +105,8 @@ jobs:
         name: ${{ env.BINARY_NAME }}-${{ github.sha }}
         path: ${{ env.BINARY_NAME }}
 
-    if: ${{ matrix.runner }} != 'windows-latest'
+    if: matrix.runner != 'windows-latest'
     steps:
-
 
     - name: Checkout Code
       uses: actions/checkout@v3
