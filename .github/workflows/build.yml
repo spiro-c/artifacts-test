@@ -60,8 +60,8 @@ jobs:
             name: Linux-Build armhf
             shell: bash
             platform: linux/arm/v7
-            os: armhf
-            arch: arm64
+            os: linux
+            arch: armhf
                     
           - runner: ubuntu-latest
             name: Linux-Build armel
@@ -78,7 +78,12 @@ jobs:
     
     steps:
 
-
+    - name: Set up Build Environment 
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+      if: matrix.runner == 'windows-latest'
+      
     - name: Checkout Code
       uses: actions/checkout@v3
       with:
