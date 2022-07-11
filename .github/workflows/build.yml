@@ -25,8 +25,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.name }}
     defaults:
-    run:
-      shell: ${{ matrix.shell} {0}
+      run:
+        shell: ${{ matrix.shell }} {0}
     strategy:
       matrix:
         include:
