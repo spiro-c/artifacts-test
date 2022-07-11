@@ -24,55 +24,61 @@ jobs:
   build:
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.name }}
+    defaults:
+    run:
+      shell: ${{ matrix.shell} {0}
     strategy:
       matrix:
         include:
           - runner: macos-latest
             name: Macos-Build AMD64
+            shell: bash
             os: darwin
             arch: amd64
 
           - runner: macos-latest
             name: Macos-Build ARM64
+            shell: bash
             os: darwin
             arch: ARM64
 
           - runner: ubuntu-latest
             name: Linux-Build AMD64
+            shell: bash
             platform: linux/amd64
             os: linux
             arch: amd64
             
           - runner: ubuntu-latest
             name: Linux-Build ARM64
+            shell: bash
             platform: linux/arm64
             os: linux
             arch: arm64
                         
           - runner: ubuntu-latest
             name: Linux-Build armhf
+            shell: bash
             platform: linux/arm/v7
             os: armhf
             arch: arm64
                     
           - runner: ubuntu-latest
             name: Linux-Build armel
+            shell: bash
             platform: linux/arm/v6
             os: linux
             arch: armel
                            
           - runner: windows-latest
             name: Windows-Build AMD64
+            shell: msys2
             os: windows
             arch: amd64
     
     steps:
 
-    - name: Set windows shell to msys
-      run:
-        shell: msys2 {0}
-      if: matrix.runner == 'windows-latest'
-      
+
     - name: Checkout Code
       uses: actions/checkout@v3
       with:
