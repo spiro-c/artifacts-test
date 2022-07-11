@@ -33,26 +33,26 @@ jobs:
       matrix:
         include:
           - runner: macos-latest
-            name: Macos-Build AMD64
+            name: Macos-Build amd64
             shell: bash
             os: darwin
             arch: amd64
 
           - runner: macos-latest
-            name: Macos-Build ARM64
+            name: Macos-Build arm64
             shell: bash
             os: darwin
-            arch: ARM64
+            arch: arm64
 
           - runner: ubuntu-latest
-            name: Linux-Build AMD64
+            name: Linux-Build amd64
             shell: bash
             platform: linux/amd64
             os: linux
             arch: amd64
             
           - runner: ubuntu-latest
-            name: Linux-Build ARM64
+            name: Linux-Build arm64
             shell: bash
             platform: linux/arm64
             os: linux
@@ -77,14 +77,13 @@ jobs:
             shell: msys2
             os: windows
             arch: amd64
-    
+    if: ${{ matrix.runner }} == 'windows-latest'
     steps:
 
     - name: Set up Build Environment 
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
-      if: matrix.runner == 'windows-latest'
 
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -95,7 +94,31 @@ jobs:
 #        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
 #        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
 
-    - name: Write Env
+    - name: Write Env On Windows
+      run: |
+        env
+        printenv > $BINARY_NAME
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.BINARY_NAME }}-${{ github.sha }}
+        path: ${{ env.BINARY_NAME }}
+
+    if: ${{ matrix.runner }} !== 'windows-latest'
+    steps:
+
+
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+#    - name: Get Build Matrix Info and Set Variables
+#      run: |
+#        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
+#        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+
+    - name: Write Env In Linux and Darwin
       run: |
         env
         printenv > $BINARY_NAME
