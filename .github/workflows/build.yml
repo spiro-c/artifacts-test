@@ -39,34 +39,53 @@ jobs:
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
           echo "dir=$(pip cache dir)"
 
-      - name: Cache pip and venv
-        id: cache-pip
+      - name: Cache venv
+        id: cache-venv
         uses: actions/cache@v3
         with:
           path: |
-            ${{ steps.pip-cache.outputs.dir }}
             venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Display Python version
-        run: python --version
 
-      - name: Install dependencies
-        if: steps.cache-pip.outputs.cache-hit != 'true'
+      - name: Create Virtual environment
+        if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
           python3 -m venv venv
+
+      - name: Activate virtualenv
+        run: |
           if [ ${{ runner.os }} = "Windows" ]; then
             source venv/Scripts/activate
           else
             source venv/bin/activate
           fi
+          echo PATH=$PATH >> $GITHUB_ENV
+
+      - name: Cache pip
+        id: cache-pip
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Display Python version
+        run: |
+          python --version
+          which python3
+
+      - name: Install dependencies
+        if: steps.cache-pip.outputs.cache-hit != 'true'
+        run: |
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
           python3 setup.py develop
-          which python3
+
       - name: Check env
         run: |
           which python3
