@@ -1,129 +1,85 @@
-name: Build artifacts
+name: Build LedFx on Gh
 
 on:
-  push:
-    branches:
-      - 'main'
-    tags:
-      - 'v*'
-    paths-ignore:
-      - '**.md'
-  pull_request:
-    branches:
-      - 'main'
-    paths-ignore:
-      - '**.md'
   workflow_dispatch:
 
-#  BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
-
-
 jobs:
-  build:
-    runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.name }}
-    env:
-      GHCR_SLUG: ghcr.io/ledfx/ledfx_v3
-      PLATFORMS: linux/amd64,linux/arm64
-      BINARY_NAME: LedFx-${{ matrix.os }}-${{ matrix.arch }}
+  build-cache:
+    name: Build Cache
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: '${{ matrix.shell }} {0}'
+        shell: bash -x {0}
     strategy:
       matrix:
-        include:
-          - runner: macos-latest
-            name: Macos-Build amd64
-            shell: bash
-            os: darwin
-            arch: amd64
-
-          - runner: macos-latest
-            name: Macos-Build arm64
-            shell: bash
-            os: darwin
-            arch: arm64
-
-          - runner: ubuntu-latest
-            name: Linux-Build amd64
-            shell: bash
-            platform: linux/amd64
-            os: linux
-            arch: amd64
-            
-          - runner: ubuntu-latest
-            name: Linux-Build arm64
-            shell: bash
-            platform: linux/arm64
-            os: linux
-            arch: arm64
-                        
-          - runner: ubuntu-latest
-            name: Linux-Build armhf
-            shell: bash
-            platform: linux/arm/v7
-            os: linux
-            arch: armhf
-                    
-          - runner: ubuntu-latest
-            name: Linux-Build armel
-            shell: bash
-            platform: linux/arm/v6
-            os: linux
-            arch: armel
-                           
-          - runner: windows-latest
-            name: Windows-Build AMD64
-            shell: msys2
-            os: windows
-            arch: amd64
-    if: matrix.runner == 'windows-latest'
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.11']
     steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v3
+        with:
+          repository: LedFx/LedFx
+          ref: main
 
-    - name: Set up Build Environment 
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Checkout Code
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-#    - name: Get Build Matrix Info and Set Variables
-#      run: |
-#        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
-#        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+      - name: Get Backend Version
+        id: getbackendver
+        run: |       
+          echo "action_state=$(python3 ledfx/consts.py)" >> $GITHUB_ENV
+          BINARY_NAME=LedFx-${{ runner.os }}
+          echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
 
-    - name: Write Env On Windows
-      run: |
-        env
-        printenv > $BINARY_NAME
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+          echo "dir=$(pip cache dir)"
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.BINARY_NAME }}-${{ github.sha }}
-        path: ${{ env.BINARY_NAME }}
+      - name: pip cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
-    if: matrix.runner == 'ubuntu-latest'
-    steps:
+      - name: Display Python version
+        run: python --version
 
-    - name: Checkout Code
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-#    - name: Get Build Matrix Info and Set Variables
-#      run: |
-#        export BINARY_NAME=LedFx-${{ matrix.os }}-${{ matrix.arch }}
-#        echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: |
+          python3 -m pip install -r requirements.txt pyinstaller
+          python3 -m pip install -e .
+          python3 setup.py develop
 
-    - name: Write Env In Linux and Darwin
-      run: |
-        env
-        printenv > $BINARY_NAME
+#       - name: Portaudio dependency for windows
+#         if: startsWith(runner.os, 'Windows') 
+#         uses: msys2/setup-msys2@v2
+# #        shell: msys2 {0}
+#         with:
+#           msystem: MINGW64
+#           update: true
+#           install: |
+#               git
+#               zip
+#               unzip
+#               base-devel
+#               mingw-w64-x86_64-gcc
+#               mingw-w64-x86_64-cmake
+#               mingw-w64-x86_64-ninja
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.BINARY_NAME }}-${{ github.sha }}
-        path: ${{ env.BINARY_NAME }}
+#       - name: Build portaudio
+#         if: startsWith(runner.os, 'Windows')
+#         shell: msys2 {0}
+#         run: |
+#           export CYGPATH=$(cygpath -m /)
+#           git clone https://github.com/portaudio/portaudio
+#           cmake -B portaudio/.build -S portaudio -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} -DPA_BUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DPA_USE_ASIO=on
+#           cmake --build portaudio/.build/
+#           cmake --install portaudio/.build/
+#           rm -rf portaudio
+#           mv $CYGPATH/mingw64/bin/libportaudio.dll $pythonLocation/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
