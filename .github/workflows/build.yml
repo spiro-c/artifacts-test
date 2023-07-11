@@ -18,8 +18,8 @@ jobs:
       - name: Check out code from GitHub
         uses: actions/checkout@v3
         with:
-          repository: LedFx/LedFx
-          ref: main
+          repository: spiro-c/LedFx
+          ref: fix-hue
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -132,8 +132,8 @@ jobs:
       - name: Check out code from GitHub
         uses: actions/checkout@v3
         with:
-          repository: LedFx/LedFx
-          ref: main
+          repository: spiro-c/LedFx
+          ref: fix-hue
 
       - name: Check out code from GitHub
         uses: actions/checkout@v3
