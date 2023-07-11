@@ -59,7 +59,7 @@ jobs:
         run: |
           python3 -m venv venv
           if [ ${{ runner.os }} = "Windows" ]; then
-            source venv\Scripts\activate
+            source venv/Scripts/activate
           else
             source venv/bin/activate
           fi
@@ -68,7 +68,9 @@ jobs:
           python3 setup.py develop
           which python3
       - name: Check env
-        run: ls -la
+        run: |
+          which python3
+          ls -la
 
 #       - name: Portaudio dependency for windows
 #         if: startsWith(runner.os, 'Windows') 
