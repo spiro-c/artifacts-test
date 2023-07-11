@@ -67,6 +67,7 @@ jobs:
           python3 -m pip install -e .
           python3 setup.py develop
           which python3
+          echo .env
 
 #       - name: Portaudio dependency for windows
 #         if: startsWith(runner.os, 'Windows') 
