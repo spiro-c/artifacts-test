@@ -26,18 +26,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Get Backend Version
-        id: getbackendver
-        run: |       
-          echo "action_state=$(python3 ledfx/consts.py)" >> $GITHUB_ENV
-          BINARY_NAME=LedFx-${{ runner.os }}
-          echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
-
       - name: Get pip cache dir
         id: pip-cache
         run: |
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-
 
       - name: Cache venv
         id: cache-venv
@@ -55,6 +47,11 @@ jobs:
         run: |
           python3 -m venv venv
 
+      - name: Get Backend Version
+        id: getbackendver
+        run: |       
+
+          
       - name: Cache pip
         id: cache-pip
         uses: actions/cache@v3
@@ -74,7 +71,11 @@ jobs:
           fi
           python --version
           which python3
-
+          echo "action_state=$(python3 ledfx/consts.py)" >> $GITHUB_ENV
+          BINARY_NAME=LedFx-${{ runner.os }}
+          echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+          echo "VIRTUAL_PATH=$VIRTUAL_ENV" >> $GITHUB_ENV
+          
       - name: Install dependencies
         if: steps.cache-pip.outputs.cache-hit != 'true'
         run: |
@@ -86,18 +87,6 @@ jobs:
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
           python3 setup.py develop
-
-      - name: Check env
-        run: |
-          if [ ${{ runner.os }} = "Windows" ]; then
-            source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
-          which python3
-          ls -la
-          echo $VIRTUAL_ENV
-          echo $VIRTUAL_ENV_PROMPT
 
       - name: Portaudio dependency for windows
         if: startsWith(runner.os, 'Windows') 
@@ -123,12 +112,12 @@ jobs:
           else
             source venv/bin/activate
           fi
+          echo $VIRTUAL_PATH
           export CYGPATH=$(cygpath -m /)
           git clone https://github.com/portaudio/portaudio
           cmake -B portaudio/.build -S portaudio -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} -DPA_BUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DPA_USE_ASIO=on
           cmake --build portaudio/.build/
           cmake --install portaudio/.build/
           rm -rf portaudio
-          mv $CYGPATH/mingw64/bin/libportaudio.dll $pythonLocation/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
-          echo $VIRTUAL_ENV
+          mv $CYGPATH/mingw64/bin/libportaudio.dll $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
 
