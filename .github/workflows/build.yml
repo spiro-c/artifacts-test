@@ -196,11 +196,11 @@ jobs:
           else
             source venv/bin/activate
           fi
-          mv tools/hook-samplerate.py $VIRTUAL_PATH/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py \
-          && \
-          python3 setup.py develop \
-          pyinstaller win.spec \
-          && \
+          mv tools/hook-samplerate.py $VIRTUAL_PATH/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          python3 -m pip install -r requirements.txt pyinstaller
+          python3 -m pip install -e .
+          python3 setup.py develop 
+          pyinstaller win.spec 
           7z.exe a -tzip $BINARY_NAME-core-$action_state.zip dist/LedFx "-mx5" "-xr!.git" "-xr!.github"
 
       - name: Upload ${{ env.BINARY_NAME }} core ${{ env.action_state }}
@@ -218,8 +218,7 @@ jobs:
           else
             source venv/bin/activate
           fi
-          python3 setup.py develop \
-          && \
+          python3 setup.py develop
           pyinstaller win-portable.spec
           ls dist/
           mv dist/LedFx.exe $BINARY_NAME-portable-$action_state.exe
