@@ -42,9 +42,11 @@ jobs:
       - name: pip cache
         uses: actions/cache@v3
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
+            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            ${{ env.pythonLocation }}-${{ runner.os }}-pip-
             ${{ runner.os }}-pip-
 
       - name: Display Python version
