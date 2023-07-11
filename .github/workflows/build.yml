@@ -197,6 +197,7 @@ jobs:
             source venv/bin/activate
           fi
           mv tools/hook-samplerate.py $VIRTUAL_PATH/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          mv tools/win.spec win.spec
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
           python3 setup.py develop 
@@ -218,6 +219,9 @@ jobs:
           else
             source venv/bin/activate
           fi
+          mv tools/win-portable.spec win-portable.spec
+          python3 -m pip install -r requirements.txt pyinstaller
+          python3 -m pip install -e .
           python3 setup.py develop
           pyinstaller win-portable.spec
           ls dist/
