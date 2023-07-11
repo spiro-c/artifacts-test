@@ -42,11 +42,12 @@ jobs:
       - name: pip cache
         uses: actions/cache@v3
         with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          path: |
+            ${{ steps.pip-cache.outputs.dir }}
+            venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
             ${{ runner.os }}-pip-
 
       - name: Display Python version
@@ -54,9 +55,12 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python3 -m venv venv
+          . venv/bin/activate
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
           python3 setup.py develop
+          which python3
 
 #       - name: Portaudio dependency for windows
 #         if: startsWith(runner.os, 'Windows') 
