@@ -99,30 +99,36 @@ jobs:
           echo $VIRTUAL_ENV
           echo $VIRTUAL_ENV_PROMPT
 
-#       - name: Portaudio dependency for windows
-#         if: startsWith(runner.os, 'Windows') 
-#         uses: msys2/setup-msys2@v2
-# #        shell: msys2 {0}
-#         with:
-#           msystem: MINGW64
-#           update: true
-#           install: |
-#               git
-#               zip
-#               unzip
-#               base-devel
-#               mingw-w64-x86_64-gcc
-#               mingw-w64-x86_64-cmake
-#               mingw-w64-x86_64-ninja
+      - name: Portaudio dependency for windows
+        if: startsWith(runner.os, 'Windows') 
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: |
+              git
+              zip
+              unzip
+              base-devel
+              mingw-w64-x86_64-gcc
+              mingw-w64-x86_64-cmake
+              mingw-w64-x86_64-ninja
 
-#       - name: Build portaudio
-#         if: startsWith(runner.os, 'Windows')
-#         shell: msys2 {0}
-#         run: |
-#           export CYGPATH=$(cygpath -m /)
-#           git clone https://github.com/portaudio/portaudio
-#           cmake -B portaudio/.build -S portaudio -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} -DPA_BUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DPA_USE_ASIO=on
-#           cmake --build portaudio/.build/
-#           cmake --install portaudio/.build/
-#           rm -rf portaudio
-#           mv $CYGPATH/mingw64/bin/libportaudio.dll $pythonLocation/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
+      - name: Build portaudio
+        if: startsWith(runner.os, 'Windows')
+        shell: msys2 {0}
+        run: |
+          if [ ${{ runner.os }} = "Windows" ]; then
+            source venv/Scripts/activate
+          else
+            source venv/bin/activate
+          fi
+          export CYGPATH=$(cygpath -m /)
+          git clone https://github.com/portaudio/portaudio
+          cmake -B portaudio/.build -S portaudio -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} -DPA_BUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DPA_USE_ASIO=on
+          cmake --build portaudio/.build/
+          cmake --install portaudio/.build/
+          rm -rf portaudio
+          mv $CYGPATH/mingw64/bin/libportaudio.dll $pythonLocation/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
+          echo $VIRTUAL_ENV
+
