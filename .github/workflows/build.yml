@@ -37,7 +37,7 @@ jobs:
         id: pip-cache
         run: |
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-          echo "dir=$(pip cache dir)"
+
 
       - name: Cache venv
         id: cache-venv
@@ -54,14 +54,6 @@ jobs:
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
           python3 -m venv venv
-
-      - name: Activate virtualenv
-        run: |
-          if [ ${{ runner.os }} = "Windows" ]; then
-            source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
 
       - name: Cache pip
         id: cache-pip
@@ -104,6 +96,8 @@ jobs:
           fi
           which python3
           ls -la
+          echo $VIRTUAL_ENV
+          echo &VIRTUAL_ENV_PROMPT
 
 #       - name: Portaudio dependency for windows
 #         if: startsWith(runner.os, 'Windows') 
