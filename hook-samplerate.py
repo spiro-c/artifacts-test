@@ -11,5 +11,8 @@
 # ------------------------------------------------------------------
 
 from PyInstaller.utils.hooks import collect_dynamic_libs
-
-binaries = collect_dynamic_libs('samplerate')
+from PyInstaller.compat import is_darwin, is_win
+if is_win:
+ binaries = collect_dynamic_libs('samplerate',search_patterns=["*.dll"])
+elif is_darwin:
+ binaries = collect_dynamic_libs('samplerate',search_patterns=["*.dylib"])
