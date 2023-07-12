@@ -33,10 +33,12 @@ jobs:
       cmake_build_type: Release
     steps:
     - name: checkout Git repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: PortAudio/portaudio
-        ref: master
+        # Current working portaudio source
+        ref: cb8d3dcbc6fa74c67f3e236be89b12d5630da141
+        path: portaudio
     - name: "[Windows/MinGW] set up ASIO SDK cache"
       uses: actions/cache@v3
       if: matrix.asio_sdk_cache_path != null
@@ -62,12 +64,12 @@ jobs:
            -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
            -DPA_USE_SKELETON=ON
            -DPA_WARNINGS_ARE_ERRORS=ON
-           -S .
-           -B build
+           -S portaudio
+           -B portaudio/build
     - name: build
-      run: cmake --build build --config ${{ env.cmake_build_type }} --parallel 2
+      run: cmake --build portaudio/build --config ${{ env.cmake_build_type }} --parallel 2
     - name: install
-      run: cmake --install build --config ${{ env.cmake_build_type }}
+      run: cmake --install portaudio/build --config ${{ env.cmake_build_type }}
     - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2
       with:
