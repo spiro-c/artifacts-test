@@ -154,7 +154,9 @@ jobs:
       - name: build
         run: cmake --build portaudio/build --config ${{ env.cmake_build_type }} --parallel 2
       - name: install
-        run: cmake --install portaudio/build --config ${{ env.cmake_build_type }}
+        run: | 
+          cmake --install portaudio/build --config ${{ env.cmake_build_type }}
+          ls -la ${{ matrix.install_dir }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -192,9 +194,8 @@ jobs:
           echo "action_state=$(python3 ledfx/consts.py)" >> $GITHUB_ENV
           BINARY_NAME=LedFx-${{ runner.os }}
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
-          echo "VIRTUAL_PATH=$VIRTUAL_ENV" >> $GITHUB_ENV
-          mv $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit-old.dll
-          mv ${{ matrix.install_dir }}/bin/portaudio.dll $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
+          mv $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit-old.dll
+          mv ${{ matrix.install_dir }}/bin/portaudio.dll $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
       - name: Cache pip
         id: cache-pip
         uses: actions/cache@v3
@@ -210,7 +211,7 @@ jobs:
         if: startsWith(runner.os, 'Windows')
         run: |
           source venv/Scripts/activate
-          mv tools/hook-samplerate.py $VIRTUAL_PATH/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          # mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           mv tools/win.spec win.spec
           python3 -m pyinstaller win.spec 
           7z.exe a -tzip $BINARY_NAME-core-$action_state.zip dist/LedFx "-mx5" "-xr!.git" "-xr!.github"
@@ -226,7 +227,6 @@ jobs:
         if: startsWith(runner.os, 'Windows')
         run: |
           source venv/Scripts/activate
-          source venv/bin/activate
           mv tools/win-portable.spec win-portable.spec
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
