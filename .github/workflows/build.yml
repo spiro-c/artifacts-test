@@ -285,12 +285,12 @@ jobs:
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
           python3 -m venv venv
-          source venv/activate
+          source venv/bin/activate
 
       - name: Set Variables
         id: set-vars
         run: |
-          source venv/activate
+          source venv/bin/activate
           python3 -m pip install -r requirements.txt 
           python3 -m pip install pyinstaller
           python3 -m pip install -e .
@@ -314,7 +314,7 @@ jobs:
 
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         run: |
-          source venv/activate
+          source venv/bin/activate
           # mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           mv tools/mac.spec mac.spec
           pyinstaller mac.spec
