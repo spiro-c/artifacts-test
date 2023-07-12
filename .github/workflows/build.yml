@@ -195,7 +195,7 @@ jobs:
           BINARY_NAME=LedFx-${{ runner.os }}
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
           mv $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit-old.dll
-          mv '${{ matrix.install_dir }}/bin/portaudio.dll' $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
+          mv ${{ matrix.install_dir }}/bin/libportaudio.dll $VIRTUAL_ENV/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
       - name: Cache pip
         id: cache-pip
         uses: actions/cache@v3
