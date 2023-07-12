@@ -228,7 +228,7 @@ jobs:
         run: |
           source venv/Scripts/activate
           cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
-          cp tools/win-console.spec win.spec
+          cp tools/win-console.spec win-console.spec
           pyinstaller win-console.spec
           cp -r dist/LedFx-console $BINARY_NAME-console-$action_state
           7z.exe a -tzip $BINARY_NAME-console-$action_state.zip $BINARY_NAME-console-$action_state "-mx5" "-xr!.git" "-xr!.github"
