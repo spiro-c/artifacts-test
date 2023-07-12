@@ -334,9 +334,12 @@ jobs:
         run: |
           source venv/bin/activate
           ls -Rla tools/
-          cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/python3.11/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          # Notworking on mac
+          #cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/python3.11/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           cp tools/mac.spec mac.spec
           pyinstaller mac.spec
+          mkdir -p dist/LedFx_v2/Contents/MacOS/LedFx_v2/samplerate/_samplerate_data
+          cp $VIRTUAL_ENV/lib/python3.11/site-packages/samplerate/_samplerate_data/libsamplerate.dylib dist/LedFx_v2/Contents/MacOS/LedFx_v2/samplerate/_samplerate_data
           chmod +x dist/LedFx_v2/Contents/MacOS/LedFx_v2
           ls -la dist/
           cp -r dist/LedFx_v2 ./LedFx.app
