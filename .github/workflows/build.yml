@@ -18,8 +18,8 @@ jobs:
       - name: Check out code from GitHub
         uses: actions/checkout@v3
         with:
-          repository: spiro-c/LedFx
-          ref: fix-hue
+          repository: LedFx/LedFx
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -82,43 +82,11 @@ jobs:
           fi
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
-          python3 setup.py develop
 
-      - name: Portaudio dependency for windows
-        if: startsWith(runner.os, 'Windows') 
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: |
-              git
-              zip
-              unzip
-              base-devel
-              mingw-w64-x86_64-gcc
-              mingw-w64-x86_64-cmake
-              mingw-w64-x86_64-ninja
-
-      - name: Build portaudio
-        if: startsWith(runner.os, 'Windows')
-        shell: msys2 {0}
-        run: |
-          if [ ${{ runner.os }} = "Windows" ]; then
-            source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
-          echo $VIRTUAL_PATH
-          export CYGPATH=$(cygpath -m /)
-          git clone https://github.com/portaudio/portaudio
-          cmake -B portaudio/.build -S portaudio -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} -DPA_BUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DPA_USE_ASIO=on
-          cmake --build portaudio/.build/
-          cmake --install portaudio/.build/
-          rm -rf portaudio
-          mv $CYGPATH/mingw64/bin/libportaudio.dll $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
-
-  build-core:
-    name: Build Core
+  build-windows:
+    name: Build Core and Portable
+    env:
+      cmake_build_type: Release
     needs: build-cache
     runs-on: ${{ matrix.os }}
     defaults:
@@ -126,19 +94,67 @@ jobs:
         shell: bash -x {0}
     strategy:
       matrix:
-        os: [windows-latest]
-        python-version: ['3.11']
+        include:
+          - name: Windows MinGW
+            python-version: ['3.11']
+            os: windows-latest
+            install_dir: C:\portaudio
+            vcpkg_triplet: x64-mingw-static
+            cmake_generator: "MinGW Makefiles"
+            # ASIO_SDK_ZIP_PATH needs to be quoted or CMake will save the download to
+            # asiosdk instead of asiosdk.zip.
+            asio_sdk_cache_path: "asiosdk.zip"
+            # Somehow CMake fails to find the toolchain file if a relative path is used on Windows.
+            cmake_options:
+              -DPA_USE_ASIO=ON
+              -DPA_BUILD_SHARED_LIBS=ON
+              -DASIO_SDK_ZIP_PATH="asiosdk.zip"
+              -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
     steps:
-      - name: Check out code from GitHub
+      - name: Check out LedFx code from GitHub
         uses: actions/checkout@v3
         with:
-          repository: spiro-c/LedFx
-          ref: fix-hue
+          repository: LedFx/LedFx
+          ref: main
 
       - name: Check out code from GitHub
         uses: actions/checkout@v3
         with:
           path: tools
+      - name: Chec kout Portaudio code from GitHub
+        uses: actions/checkout@v3
+        with:
+          repository: PortAudio/portaudio
+          # Current working portaudio source
+          ref: cb8d3dcbc6fa74c67f3e236be89b12d5630da141
+          path: portaudio
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v7
+        if: ${{ matrix.vcpkg_triplet }} != null
+        with:
+          vcpkgTriplet: ${{ matrix.vcpkg_triplet }}
+          appendedCacheKey: ${{ hashFiles( '**/vcpkg.json' ) }}
+          additionalCachedPaths: build/vcpkg_installed
+          vcpkgGitCommitId: f30786c9c4c901f21a13e2d524349e39cc359a90
+          # Required when using vcpkg.json manifest in repository
+          setupOnly: true
+
+      - name: configure
+        run: cmake
+            -G "${{ matrix.cmake_generator }}"
+            ${{ matrix.cmake_options }}
+            -DCMAKE_INSTALL_PREFIX=${{ matrix.install_dir }}
+            -DCMAKE_BUILD_TYPE=${{ env.cmake_build_type }}
+            -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+            -DPA_USE_SKELETON=ON
+            -DPA_WARNINGS_ARE_ERRORS=ON
+            -S portaudio
+            -B portaudio/build
+      - name: build
+        run: cmake --build portaudio/build --config ${{ env.cmake_build_type }} --parallel 2
+      - name: install
+        run: cmake --install portaudio/build --config ${{ env.cmake_build_type }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -156,19 +172,20 @@ jobs:
             ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
 
 
+      # Recreate Virtual environment if cache is missing
       - name: Create Virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
           python3 -m venv venv
-  
+          source venv/Scripts/activate
+
       - name: Set Variables
         id: set-vars
         run: |
-          if [ ${{ runner.os }} = "Windows" ]; then
-            source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
+          source venv/Scripts/activate
+          python3 -m pip install -r requirements.txt 
+          python3 -m pip install pyinstaller
+          python3 -m pip install -e .
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
           python --version
           which python3
@@ -176,7 +193,8 @@ jobs:
           BINARY_NAME=LedFx-${{ runner.os }}
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
           echo "VIRTUAL_PATH=$VIRTUAL_ENV" >> $GITHUB_ENV
-
+          mv $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit-old.dll
+          mv ${{ matrix.install_dir }}/bin/portaudio.dll $VIRTUAL_PATH/lib/site-packages/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
       - name: Cache pip
         id: cache-pip
         uses: actions/cache@v3
@@ -191,17 +209,10 @@ jobs:
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         if: startsWith(runner.os, 'Windows')
         run: |
-          if [ ${{ runner.os }} = "Windows" ]; then
-            source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
+          source venv/Scripts/activate
           mv tools/hook-samplerate.py $VIRTUAL_PATH/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           mv tools/win.spec win.spec
-          python3 -m pip install -r requirements.txt pyinstaller
-          python3 -m pip install -e .
-          python3 setup.py develop 
-          pyinstaller win.spec 
+          python3 -m pyinstaller win.spec 
           7z.exe a -tzip $BINARY_NAME-core-$action_state.zip dist/LedFx "-mx5" "-xr!.git" "-xr!.github"
 
       - name: Upload ${{ env.BINARY_NAME }} core ${{ env.action_state }}
@@ -214,15 +225,11 @@ jobs:
       - name: Build ${{ env.BINARY_NAME }} portable ${{ env.action_state }}
         if: startsWith(runner.os, 'Windows')
         run: |
-          if [ ${{ runner.os }} = "Windows" ]; then
-            source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
+          source venv/Scripts/activate
+          source venv/bin/activate
           mv tools/win-portable.spec win-portable.spec
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
-          python3 setup.py develop
           pyinstaller win-portable.spec
           ls dist/
           mv dist/LedFx.exe $BINARY_NAME-portable-$action_state.exe
