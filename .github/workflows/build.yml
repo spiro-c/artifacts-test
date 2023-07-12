@@ -333,8 +333,9 @@ jobs:
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         run: |
           source venv/bin/activate
-          mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
-          mv tools/mac.spec mac.spec
+          ls -Rla tools/
+          cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          cp tools/mac.spec mac.spec
           pyinstaller mac.spec
           chmod +x dist/LedFx_v2/Contents/MacOS/LedFx_v2
           ls -la dist/
