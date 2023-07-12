@@ -84,7 +84,7 @@ jobs:
           python3 -m pip install -e .
 
   build-windows:
-    name: Build Core and Portable
+    name: ${{ matrix.name }}
     env:
       cmake_build_type: Release
     needs: build-cache
@@ -95,10 +95,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: Windows MinGW
-            python-version: ['3.11']
+          - name: Build Windows Core and Portable
+            python-version: 3.11
             os: windows-latest
-            install_dir: C:\portaudio
+            install_dir: C:/portaudio
             vcpkg_triplet: x64-mingw-static
             cmake_generator: "MinGW Makefiles"
             # ASIO_SDK_ZIP_PATH needs to be quoted or CMake will save the download to
