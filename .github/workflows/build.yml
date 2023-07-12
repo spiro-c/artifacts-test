@@ -333,7 +333,6 @@ jobs:
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         run: |
           source venv/bin/activate
-          ls -Rla tools/
           # Notworking on mac
           #cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/python3.11/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           cp tools/mac.spec mac.spec
