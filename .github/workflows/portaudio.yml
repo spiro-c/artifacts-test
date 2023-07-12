@@ -30,7 +30,7 @@ jobs:
         shell: bash -x {0}
     name: ${{ matrix.name }}
     env:
-      cmake_build_type: RelWithDebInfo
+      cmake_build_type: Release
     steps:
     - name: checkout Git repository
       uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
         repository: PortAudio/portaudio
         ref: master
     - name: "[Windows/MinGW] set up ASIO SDK cache"
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       if: matrix.asio_sdk_cache_path != null
       with:
         path: ${{ matrix.asio_sdk_cache_path }}
