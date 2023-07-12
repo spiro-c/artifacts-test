@@ -11,6 +11,6 @@
 # ------------------------------------------------------------------
 
 from PyInstaller.compat import is_win, is_darwin
-from PyInstaller.utils.hooks import collect_dynamic_libs, logger
+from PyInstaller.utils.hooks import collect_data_files, logger
 
-binaries = collect_dynamic_libs('samplerate')
+datas = collect_data_files
