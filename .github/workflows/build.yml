@@ -212,10 +212,11 @@ jobs:
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         run: |
           source venv/Scripts/activate
-          # mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           mv tools/win.spec win.spec
-          pyinstaller win.spec 
-          7z.exe a -tzip $BINARY_NAME-core-$action_state.zip dist/LedFx "-mx5" "-xr!.git" "-xr!.github"
+          pyinstaller win.spec
+          cp -r dist/LedFx $BINARY_NAME-$action_state
+          7z.exe a -tzip $BINARY_NAME-core-$action_state.zip $BINARY_NAME-$action_state "-mx5" "-xr!.git" "-xr!.github"
 
       - name: Upload ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         uses: actions/upload-artifact@v3
@@ -223,9 +224,25 @@ jobs:
             name: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}
             path: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}.zip
 
+      - name: Build ${{ env.BINARY_NAME }} console ${{ env.action_state }}
+        run: |
+          source venv/Scripts/activate
+          cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          mv tools/win.spec win.spec
+          pyinstaller win-console.spec
+          cp -r dist/LedFx-console $BINARY_NAME-console-$action_state
+          7z.exe a -tzip $BINARY_NAME-console-$action_state.zip $BINARY_NAME-console-$action_state "-mx5" "-xr!.git" "-xr!.github"
+
+      - name: Upload ${{ env.BINARY_NAME }} console ${{ env.action_state }}
+        uses: actions/upload-artifact@v3
+        with:
+            name: ${{ env.BINARY_NAME }}-console-${{ env.action_state }}
+            path: ${{ env.BINARY_NAME }}-console-${{ env.action_state }}.zip
+
       - name: Build ${{ env.BINARY_NAME }} portable ${{ env.action_state }}
         run: |
           source venv/Scripts/activate
+          cp tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           mv tools/win-portable.spec win-portable.spec
           pyinstaller win-portable.spec
           ls dist/
@@ -237,6 +254,7 @@ jobs:
         with:
             name: ${{ env.BINARY_NAME }}-portable-${{ env.action_state }}
             path: ${{ env.BINARY_NAME }}-portable-${{ env.action_state }}.exe
+
 ###### macOS build core
   build-macos:
     name: ${{ matrix.name }}
@@ -315,7 +333,7 @@ jobs:
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
         run: |
           source venv/bin/activate
-          # mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
           mv tools/mac.spec mac.spec
           pyinstaller mac.spec
           chmod +x dist/LedFx_v2/Contents/MacOS/LedFx_v2
@@ -327,4 +345,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}
-            path: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}.zip
+            path: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}.tar
