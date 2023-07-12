@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.11']
     steps:
-      - name: Check out code from GitHub
+      - name: Checkout code from GitHub
         uses: actions/checkout@v3
         with:
           repository: LedFx/LedFx
@@ -83,6 +83,8 @@ jobs:
           python3 -m pip install -r requirements.txt pyinstaller
           python3 -m pip install -e .
 
+###### Windows build core and portable
+
   build-windows:
     name: ${{ matrix.name }}
     env:
@@ -111,17 +113,17 @@ jobs:
               -DASIO_SDK_ZIP_PATH="asiosdk.zip"
               -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
     steps:
-      - name: Check out LedFx code from GitHub
+      - name: Checkout LedFx code from GitHub
         uses: actions/checkout@v3
         with:
           repository: LedFx/LedFx
           ref: main
 
-      - name: Check out code from GitHub
+      - name: Checkout code from GitHub
         uses: actions/checkout@v3
         with:
           path: tools
-      - name: Chec kout Portaudio code from GitHub
+      - name: Checkout Portaudio code from GitHub
         uses: actions/checkout@v3
         with:
           repository: PortAudio/portaudio
@@ -208,7 +210,6 @@ jobs:
              
 
       - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
-        if: startsWith(runner.os, 'Windows')
         run: |
           source venv/Scripts/activate
           # mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
@@ -217,14 +218,12 @@ jobs:
           7z.exe a -tzip $BINARY_NAME-core-$action_state.zip dist/LedFx "-mx5" "-xr!.git" "-xr!.github"
 
       - name: Upload ${{ env.BINARY_NAME }} core ${{ env.action_state }}
-        if: startsWith(runner.os, 'Windows')
         uses: actions/upload-artifact@v3
         with:
             name: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}
             path: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}.zip
 
       - name: Build ${{ env.BINARY_NAME }} portable ${{ env.action_state }}
-        if: startsWith(runner.os, 'Windows')
         run: |
           source venv/Scripts/activate
           mv tools/win-portable.spec win-portable.spec
@@ -234,8 +233,98 @@ jobs:
 
 
       - name: Upload ${{ env.BINARY_NAME }} portable ${{ env.action_state }}
-        if: startsWith(runner.os, 'Windows')
         uses: actions/upload-artifact@v3
         with:
             name: ${{ env.BINARY_NAME }}-portable-${{ env.action_state }}
             path: ${{ env.BINARY_NAME }}-portable-${{ env.action_state }}.exe
+###### macOS build core
+  build-macos:
+    name: ${{ matrix.name }}
+    needs: build-cache
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -x {0}
+    strategy:
+      matrix:
+        include:
+          - name: Build macOS Core
+            python-version: 3.11
+            os: macos-latest
+
+    steps:
+      - name: Checkout LedFx code from GitHub
+        uses: actions/checkout@v3
+        with:
+          repository: LedFx/LedFx
+          ref: main
+
+      - name: Checkout code from GitHub
+        uses: actions/checkout@v3
+        with:
+          path: tools
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+
+
+      # Recreate Virtual environment if cache is missing
+      - name: Create Virtual environment
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python3 -m venv venv
+          source venv/activate
+
+      - name: Set Variables
+        id: set-vars
+        run: |
+          source venv/activate
+          python3 -m pip install -r requirements.txt 
+          python3 -m pip install pyinstaller
+          python3 -m pip install -e .
+          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+          python --version
+          which python3
+          echo "action_state=$(python3 ledfx/consts.py)" >> $GITHUB_ENV
+          BINARY_NAME=LedFx-${{ runner.os }}
+          echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+
+      - name: Cache pip
+        id: cache-pip
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.set-vars.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+             
+
+      - name: Build ${{ env.BINARY_NAME }} core ${{ env.action_state }}
+        run: |
+          source venv/activate
+          # mv tools/hook-samplerate.py $VIRTUAL_ENV/lib/site-packages/_pyinstaller_hooks_contrib/hooks/stdhooks/hook-samplerate.py
+          mv tools/mac.spec mac.spec
+          pyinstaller mac.spec
+          chmod +x dist/LedFx_v2/Contents/MacOS/LedFx_v2
+          ls -la dist/
+          mv dist/LedFx/LedFx.app ./LedFx.app
+          tar -czf $BINARY_NAME-core-$action_state.tar ./LedFx.app
+
+      - name: Upload ${{ env.BINARY_NAME }} core ${{ env.action_state }}
+        uses: actions/upload-artifact@v3
+        with:
+            name: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}
+            path: ${{ env.BINARY_NAME }}-core-${{ env.action_state }}.zip
