@@ -320,7 +320,7 @@ jobs:
           pyinstaller mac.spec
           chmod +x dist/LedFx_v2/Contents/MacOS/LedFx_v2
           ls -la dist/
-          cp dist/LedFx_v2 ./LedFx.app
+          cp -r dist/LedFx_v2 ./LedFx.app
           tar -czf $BINARY_NAME-core-$action_state.tar ./LedFx.app
 
       - name: Upload ${{ env.BINARY_NAME }} core ${{ env.action_state }}
