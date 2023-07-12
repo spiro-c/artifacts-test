@@ -22,7 +22,7 @@ jobs:
               -DPA_USE_ASIO=ON
               -DPA_BUILD_SHARED_LIBS=ON
               -DASIO_SDK_ZIP_PATH="asiosdk.zip"
-              -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake
+              -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
 
     runs-on: ${{ matrix.os }}
     defaults:
