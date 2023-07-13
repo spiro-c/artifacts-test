@@ -312,6 +312,7 @@ jobs:
           python3 -m pip install -r requirements.txt 
           python3 -m pip install pyinstaller
           python3 -m pip install -e .
+          python3 -m pip uninstall -y && python3 -m pip install Pillow==9.5.0
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
           python --version
           which python3
