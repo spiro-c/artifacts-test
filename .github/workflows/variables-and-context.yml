@@ -51,13 +51,17 @@ jobs:
       - name: Step 2
         id: step2
         # run: echo "::set-output name=step2value::world"
-        run: echo "step2value=world" >> $GITHUB_OUTPUT
+        run: |
+            echo "step2value=world" >> $GITHUB_OUTPUT
+            echo "BINARY_NAME=LedFx-${{ runner.os }}" >> $GITHUB_ENV
   
   job3:
     runs-on: ubuntu-latest
     needs: job2
     steps:
-      - run: echo ${{needs.job2.outputs.output1}} ${{needs.job2.outputs.output2}}
+      - run: |
+         echo ${{needs.job2.outputs.output1}} ${{needs.job2.outputs.output2}}
+         echo ${{env.BINARY_NAME}}
 
   # access/set env variables
   job4:
