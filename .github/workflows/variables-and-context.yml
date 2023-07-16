@@ -41,6 +41,7 @@ jobs:
     outputs:
       output1: ${{ steps.step1.outputs.step1value }}
       output2: ${{ steps.step2.outputs.step2value }}
+      BINARY_NAME: ${{ steps.step3.outputs.BINARY_NAME }}
     
     steps:
       - name: Step 1
@@ -64,7 +65,7 @@ jobs:
     steps:
       - run: |
          echo ${{needs.job2.outputs.output1}} ${{needs.job2.outputs.output2}}
-         echo ${{needs.job2.step3.BINARY_NAME}}
+         echo ${{needs.job2.outputs.BINARY_NAME}}
 
   # access/set env variables
   job4:
