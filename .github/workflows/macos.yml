@@ -65,9 +65,11 @@ jobs:
           poetry install
           
       - name: Check version
+        id: ceck-ver-ledfx
         run: |
           poetry run ledfx --version
 
       - name: Smoketest LedFx
+        id: smoketest-ledfx
         run: |
           poetry run ledfx -vv --ci-smoke-test
