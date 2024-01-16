@@ -25,7 +25,7 @@ env:
 jobs:
 
   job1:
-    runs-on: macos-latest
+    runs-on: macos-13
     defaults:
       run:
         shell: bash -x {0}
@@ -63,6 +63,7 @@ jobs:
         id: ceck-ver-ledfx
         run: |
           poetry env info
+          echo "poetry_venv_location=$(poetry env info --path)" >> $GITHUB_PATH
           poetry run ledfx --version
 
       - name: Smoketest LedFx using poetry
