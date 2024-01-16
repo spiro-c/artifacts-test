@@ -39,16 +39,28 @@ jobs:
           ref: main
           
       - name: Install poetry
-        id: step1
+        id: instal-poetry
         # run: echo "::set-output name=step2value::world"
         run: |
           pipx install poetry
         
       - name: Configure poetry
+        id: configure-poetry
         run: poetry config virtualenvs.in-project true 
         
       - name: Check poetry env
-        id: step2
+        id: check-env
         # run: echo "::set-output name=step2value::world"
         run: |
           poetry env info
+      - name: Build wheel for ledfx
+        id: build-ledfx
+        # run: echo "::set-output name=step2value::world"
+        run: |
+          poetry build
+      - name: Install ledfx
+        id: install-ledfx
+        # run: echo "::set-output name=step2value::world"
+        run: |
+          poetry install
+          
