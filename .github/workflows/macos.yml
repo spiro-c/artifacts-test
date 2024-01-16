@@ -36,23 +36,13 @@ jobs:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: echo "$GITHUB_CONTEXT"
       
-  #step/job output variables
-  job2:
-    runs-on: macos-latest
-    
-    outputs:
-      output1: ${{ steps.step1.outputs.step1value }}
-      output2: ${{ steps.step2.outputs.step2value }}
-      BINARY_NAME: ${{ steps.step3.outputs.BINARY_NAME }}
-    
-    steps:
-      - name: Step 1
-        id: step1
-        # run: echo "::set-output name=step1value::hello"
-        run: echo "step1value=hello" >> $GITHUB_OUTPUT
-
       - name: Step 2
         id: step2
         # run: echo "::set-output name=step2value::world"
         run: |
           pipx install poetry
+      - name: Step 3
+        id: step3
+        # run: echo "::set-output name=step2value::world"
+        run: |
+          poetry env info
