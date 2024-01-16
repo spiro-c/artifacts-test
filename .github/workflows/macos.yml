@@ -69,7 +69,11 @@ jobs:
         run: |
           poetry run ledfx --version
 
+      - name: Smoketest LedFx using poetry
+        id: smoketest-ledfx-poetry
+        run: |
+          poetry run ledfx -vv --ci-smoke-test
       - name: Smoketest LedFx
         id: smoketest-ledfx
         run: |
-          poetry run ledfx -vv --ci-smoke-test
+          ledfx -vv --ci-smoke-test          
