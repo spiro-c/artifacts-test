@@ -31,18 +31,24 @@ jobs:
         shell: bash -x {0}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      
-      - name: Step 2
-        id: step2
+    
+      - name: Check out code from GitHub
+        uses: actions/checkout@v4
+        with:
+          repository: LedFx/LedFx
+          ref: main
+          
+      - name: Install poetry
+        id: step1
         # run: echo "::set-output name=step2value::world"
         run: |
           pipx install poetry
-      - name: Step 3
-        id: step3
+        
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true 
+        
+      - name: Check poetry env
+        id: step2
         # run: echo "::set-output name=step2value::world"
         run: |
           poetry env info
