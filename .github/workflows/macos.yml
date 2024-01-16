@@ -63,7 +63,8 @@ jobs:
         id: ceck-ver-ledfx
         run: |
           poetry env info
-          echo "poetry_venv_location=$(poetry env info --path)" >> $GITHUB_PATH
+          echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
+          echo $GITHUB_PATH
           poetry run ledfx --version
 
       - name: Smoketest LedFx using poetry
