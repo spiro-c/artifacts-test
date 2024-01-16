@@ -26,7 +26,9 @@ jobs:
 
   job1:
     runs-on: macos-latest
-
+    defaults:
+      run:
+        shell: bash -x {0}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Dump GitHub context
@@ -53,36 +55,4 @@ jobs:
         id: step2
         # run: echo "::set-output name=step2value::world"
         run: |
-            echo "step2value=world" >> $GITHUB_OUTPUT
-      - name: Step 3
-        id: step3
-        run: |
-            echo "BINARY_NAME=LedFx-${{ runner.os }}" >> $GITHUB_OUTPUT
-  
-  job3:
-    runs-on: macos-latest
-    needs: job2
-    steps:
-      - run: |
-         echo ${{needs.job2.outputs.output1}} ${{needs.job2.outputs.output2}}
-         echo ${{needs.job2.outputs.BINARY_NAME}}
-
-  # access/set env variables
-  job4:
-    runs-on: macos-latest
-    env:
-      VAR2: myjobvar2
-      VAR3: myjobvar3
-    steps:
-
-      - run: |
-          echo $VAR1
-          echo ${{env.VAR1}}
-
-          echo ""
-
-          echo $VAR2
-
-          echo $VAR3
-        env: 
-          VAR3: mystepvar3
+          pipx install poetry
