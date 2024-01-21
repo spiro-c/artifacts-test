@@ -1,0 +1,70 @@
+# I am a workflow that demonstrates how to output the different context objects
+
+name: PyApp test
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+env:
+  STABLE_PYTHON_VERSION: "3.12"
+
+jobs:
+  test:
+    name: ${{ matrix.job.target }} (${{ matrix.job.os }})
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+        # Windows
+        - target: x86_64-pc-windows-msvc
+          os: windows-2022
+          test: true
+
+
+    env:
+      CARGO: cargo
+      CARGO_BUILD_TARGET: "${{ matrix.job.target }}"
+      PYAPP_PROJECT_NAME: ledfx
+      PYAPP_PROJECT_VERSION: "2.0.89"
+
+    steps:
+    - name: Set up Python ${{ env.STABLE_PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.STABLE_PYTHON_VERSION }}
+
+    - name: Set up cross compiling
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cross
+
+    - name: Configure cross compiling
+      run: echo "CARGO=cross" >> $GITHUB_ENV
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ matrix.job.target }}
+        components: clippy, rustfmt
+    - name: Install pyAPP
+      run: |
+        curl https://github.com/ofek/pyapp/releases/latest/download/source.tar.gz -Lo pyapp-source.tar.gz
+        tar -xzf pyapp-source.tar.gz
+        mv pyapp-v* pyapp-latest
+        cd pyapp-latest
+        cargo build --release
+        mv target/release/pyapp ledfx && chmod +x ledfx
+        
+
