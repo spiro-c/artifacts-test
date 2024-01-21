@@ -68,11 +68,13 @@ jobs:
         cd pyapp-latest
         ls -la
         cargo build --release
-        cargo install 
+        cargo install
+        
         ls -la target/
+        ls -la taget/x86_64-pc-windows-msvc
         ls -la target/release
         ls -l target/release/build
-        mv target/release/pyapp.exe ledfx.exe
+        mv target/x86_64-pc-windows-msvc/release/pyapp.exe ledfx.exe
         ledfx.exe -vv --ci-smoke-test
         
 
