@@ -17,7 +17,7 @@ on:
         required: true
 defaults:
   run:
-    shell: bash
+    shell: bash -x {0}
 env:
   STABLE_PYTHON_VERSION: "3.12"
 
