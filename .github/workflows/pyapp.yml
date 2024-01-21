@@ -67,6 +67,7 @@ jobs:
         mv pyapp-v* pyapp-latest
         cd pyapp-latest
         cargo build --release
+        ls -la target/release
         mv target/release/pyapp.exe ledfx.exe
         ledfx.exe -vv --ci-smoke-test
         
