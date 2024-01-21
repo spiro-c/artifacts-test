@@ -66,5 +66,6 @@ jobs:
         cd pyapp-latest
         cargo build --release
         mv target/release/pyapp ledfx && chmod +x ledfx
+        ledfx -vv --ci-smoke-test
         
 
