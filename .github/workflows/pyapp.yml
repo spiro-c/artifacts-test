@@ -77,4 +77,8 @@ jobs:
         mv out/bin/pyapp.exe ledfx.exe
         carco run -- --ci-smoke-test
         
-
+    - name: Upload 
+      uses: actions/upload-artifact@v3
+      with:
+          name: ledfx.exe
+          path: ledfx.exe
