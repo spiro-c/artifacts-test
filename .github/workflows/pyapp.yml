@@ -66,7 +66,7 @@ jobs:
         tar -xzf pyapp-source.tar.gz
         mv pyapp-v* pyapp-latest
         cd pyapp-latest
-        ls-la
+        ls -la
         cargo build --release
         cargo install 
         ls -la target/
