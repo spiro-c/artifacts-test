@@ -30,9 +30,9 @@ jobs:
       matrix:
         job:
         # Windows
-        - target: x86_64-pc-windows-msvc
-          os: windows-2022
-          test: true
+        - os: windows-2022
+          #target: x86_64-pc-windows-msvc
+          test: false
 
 
     env:
@@ -47,10 +47,10 @@ jobs:
       with:
         python-version: ${{ env.STABLE_PYTHON_VERSION }}
 
-    - name: Set up cross compiling
-      uses: taiki-e/install-action@v2
-      with:
-        tool: cross
+    # - name: Set up cross compiling
+    #   uses: taiki-e/install-action@v2
+    #   with:
+    #     tool: cross
 
     # - name: Configure cross compiling
     #   run: echo "CARGO=cross" >> $GITHUB_ENV
@@ -58,7 +58,7 @@ jobs:
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
       with:
-        targets: ${{ matrix.job.target }}
+        #targets: ${{ matrix.job.target }}
         components: clippy, rustfmt
     - name: Install pyAPP
       run: |
@@ -67,7 +67,9 @@ jobs:
         mv pyapp-v* pyapp-latest
         cd pyapp-latest
         cargo build --release
+        ls -la target/
         ls -la target/release
+        ls -l target/release/build
         mv target/release/pyapp.exe ledfx.exe
         ledfx.exe -vv --ci-smoke-test
         
