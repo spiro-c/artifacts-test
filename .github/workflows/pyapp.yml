@@ -67,7 +67,7 @@ jobs:
         mv pyapp-v* pyapp-latest
         cd pyapp-latest
         ls -la
-        cargo build --release
+        #cargo build --release
         cargo install pyapp --force --root out
         ls -la target/
         ls -la out/
