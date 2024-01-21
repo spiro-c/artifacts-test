@@ -81,4 +81,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
           name: ledfx.exe
-          path: ledfx.exe
+          path: pyapp-latest/ledfx.exe
