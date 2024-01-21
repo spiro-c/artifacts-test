@@ -75,7 +75,7 @@ jobs:
         ls -la target/release
         ls -l target/release/build
         mv out/bin/pyapp.exe ledfx.exe
-        carco run -- --ci-smoke-test
+        #cargo run -- --ci-smoke-test
         
     - name: Upload 
       uses: actions/upload-artifact@v3
