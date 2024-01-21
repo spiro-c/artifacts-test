@@ -15,12 +15,14 @@ on:
         default: 'World'
         # Input has to be provided for the workflow to run
         required: true
-
+defaults:
+  run:
+    shell: bash
 env:
   STABLE_PYTHON_VERSION: "3.12"
 
 jobs:
-  test:
+  Ledfx:
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
@@ -50,8 +52,8 @@ jobs:
       with:
         tool: cross
 
-    - name: Configure cross compiling
-      run: echo "CARGO=cross" >> $GITHUB_ENV
+    # - name: Configure cross compiling
+    #   run: echo "CARGO=cross" >> $GITHUB_ENV
 
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
