@@ -40,6 +40,8 @@ jobs:
       CARGO_BUILD_TARGET: "${{ matrix.job.target }}"
       PYAPP_PROJECT_NAME: ledfx
       PYAPP_PROJECT_VERSION: "2.0.89"
+      PYAPP_PYTHON_VERSION: "3.12"
+      PYAPP_DISTRIBUTION_EMBED: true
 
     steps:
     - name: Set up Python ${{ env.STABLE_PYTHON_VERSION }}
