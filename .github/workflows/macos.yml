@@ -42,7 +42,7 @@ jobs:
         id: instal-poetry
         # run: echo "::set-output name=step2value::world"
         run: |
-          pipx install poetry
+          brew install poetry
         
       - name: Configure poetry
         id: configure-poetry
