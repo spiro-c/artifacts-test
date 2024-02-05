@@ -39,7 +39,12 @@ jobs:
         # run: echo "::set-output name=step2value::world"
         run: |
           brew install poetry mbedtls@2
-        
+    
+      - name: Setup mbedtls path for osx-arm64
+        id: mbedtls-path
+        run: |
+          echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
+    
       - name: Configure poetry
         id: configure-poetry
         run: poetry config virtualenvs.in-project true 
