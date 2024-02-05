@@ -58,6 +58,8 @@ jobs:
         id: install-ledfx
         # run: echo "::set-output name=step2value::world"
         run: |
+          export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
+          export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
           poetry install --extras hue
           
       - name: Check version
