@@ -1,6 +1,6 @@
 # I am a workflow that demonstrates how to output the different context objects
 
-name: Variables and Context Macos
+name: Test Macos
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -16,15 +16,11 @@ on:
         # Input has to be provided for the workflow to run
         required: true
 
-env:
-  VAR1: myworkflowvar1
-  VAR2: myworkflowvar2
-  VAR3: myworkflowvar3
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  job1:
+  macos-arm:
     runs-on: macos-14
     defaults:
       run:
@@ -57,7 +53,7 @@ jobs:
         id: install-ledfx
         # run: echo "::set-output name=step2value::world"
         run: |
-          poetry install
+          poetry install --extras hue
           
       - name: Check version
         id: ceck-ver-ledfx
