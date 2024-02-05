@@ -25,7 +25,7 @@ env:
 jobs:
 
   job1:
-    runs-on: macos-13
+    runs-on: macos-14
     defaults:
       run:
         shell: bash -x {0}
