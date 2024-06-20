@@ -59,8 +59,11 @@ jobs:
         id: build-whl
         # run: echo "::set-output name=step2value::world"
         run: |
+          export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
+          export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
           poetry export -f requirements.txt -E hue --output requirements.txt
           pip wheel -r requirements.txt -w ./whl
+          pip install whl/*.whl
           
       - name: Install ledfx
         id: install-ledfx
