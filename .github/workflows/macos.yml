@@ -53,7 +53,6 @@ jobs:
         id: build-ledfx
         # run: echo "::set-output name=step2value::world"
         run: |
-          poetry shell
           poetry build
           
       - name: Make wheel for dependency
@@ -62,10 +61,9 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          poetry shell
           poetry export -f requirements.txt -E hue --output requirements.txt
           pip wheel -r requirements.txt -w ./whl
-          pip install whl/*.whl
+          ./.venv/bin/pip install whl/*.whl
           
       - name: Install ledfx
         id: install-ledfx
@@ -73,13 +71,11 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          poetry shell
           poetry install --extras hue
           
       - name: Check version
         id: ceck-ver-ledfx
         run: |
-          poetry shell
           poetry env info
           echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
           echo $GITHUB_PATH
@@ -88,7 +84,6 @@ jobs:
       - name: Smoketest LedFx using poetry
         id: smoketest-ledfx-poetry
         run: |
-          poetry shell
           poetry run ledfx -vv --ci-smoke-test
       - name: Smoketest LedFx
         id: smoketest-ledfx
