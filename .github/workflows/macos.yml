@@ -54,6 +54,14 @@ jobs:
         # run: echo "::set-output name=step2value::world"
         run: |
           poetry build
+          
+      - name: Make wheel for dependency
+        id: build-whl
+        # run: echo "::set-output name=step2value::world"
+        run: |
+          poetry export -f requirements.txt -E hue --output requirements.txt
+          pip wheel -r requirements.txt -w ./whl
+          
       - name: Install ledfx
         id: install-ledfx
         # run: echo "::set-output name=step2value::world"
