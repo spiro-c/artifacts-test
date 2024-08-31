@@ -1,0 +1,97 @@
+name: Build Windows LedFx on Gh
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  DEFAULT_PYTHON: 3.12
+
+jobs:
+  build-ledfx-windows:
+    name: Build LedFx (Windows)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash -x {0}
+    steps:
+      - name: Setup CI sound system
+        uses: LABSN/sound-ci-helpers@v1
+
+      - name: Check out code from GitHub
+        uses: actions/checkout@v4
+        with:
+          repository: LedFx/LedFx
+          ref: main
+      - name: Setup Python ${{ env.DEFAULT_PYTHON }}
+        id: python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+
+      - name: Get full Python version
+        id: full-python-version
+        run: echo version=$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))") >> $GITHUB_OUTPUT
+
+      - name: Install poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python - -y
+      - name: Update Path for Windows
+        run: echo "$APPDATA\Python\Scripts" >> $GITHUB_PATH
+
+      - name: Enable long paths for git on Windows
+
+        # Enable handling long path names (+260 char) on the Windows platform
+        # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation
+        run: git config --system core.longpaths true
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ runner.arch }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Ensure cache is healthy
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: |
+          # `timeout` is not available on macOS, so we define a custom function.
+          [ "$(command -v timeout)" ] || function timeout() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+          # Using `timeout` is a safeguard against the Poetry command hanging for some reason.
+          timeout 10s poetry run pip --version || rm -rf .venv
+      - name: Check lock file
+        run: poetry check --lock
+      - name: Install LedFx
+        run: |
+          poetry install --with dev --extras hue
+      - name: Get LedFx Version and Upload to Artifacts for later use
+        id: ledfx-version
+      # Note - we remove the newline from the version string so that it can be used in the artifact name        id: ledfx-version
+        run: |
+          echo ledfx-version=$(python -c "import ledfx; print(ledfx.__version__, end='')") >> $GITHUB_OUTPUT
+          python -c "import ledfx; print(ledfx.__version__, end='')" | tr -d '\n' > ledfx_version.txt
+      - name: Upload LedFx Version
+        uses: actions/upload-artifact@v4
+        with:
+          name: ledfx_version.txt
+          path: ${{ github.workspace }}/ledfx_version.txt
+      - name: Build Binary
+        run: |
+          poetry run pyinstaller windows-binary.spec
+      - name: Remove packaged portaudio binary
+        run: |
+          rm dist/LedFx/_internal/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
+      - name: Move WASAPI loopback portaudio
+        run: |
+          mv loopback/libportaudio64bit.dll dist/LedFx/_internal/_sounddevice_data/portaudio-binaries/libportaudio64bit.dll
+      - name: Upload LedFx Binary
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: LedFx-${{ steps.ledfx-version.outputs.ledfx-version }}-windows-x64
+          path: ${{ github.workspace }}/dist/*
