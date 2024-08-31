@@ -60,11 +60,13 @@ jobs:
         id: build-whl
         # run: echo "::set-output name=step2value::world"
         run: |
+          export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
+          export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
+          export CFLAGS="-Wno-error=incompatible-function-pointer-type"
           poetry export -f requirements.txt -E hue --output requirements.txt
           pip wheel -r requirements.txt -w ./whl
           ./.venv/bin/pip install whl/*.whl
-        #  export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
-        #  export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
+
 
 
           
