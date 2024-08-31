@@ -44,7 +44,7 @@ jobs:
         id: mbedtls-path
         run: |
           echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
-          /opt/homebrew/opt/llvm/bin/clang --version
+          clang --version
     
       - name: Configure poetry
         id: configure-poetry
