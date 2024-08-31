@@ -38,7 +38,7 @@ jobs:
         id: instal-poetry
         # run: echo "::set-output name=step2value::world"
         run: |
-          brew install poetry mbedtls@2
+          brew install poetry mbedtls@2 aubio
     
       - name: Setup mbedtls path for osx-arm64
         id: mbedtls-path
