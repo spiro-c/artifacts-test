@@ -38,23 +38,23 @@ jobs:
         id: instal-poetry
         # run: echo "::set-output name=step2value::world"
         run: |
-          brew install poetry mbedtls@2 aubio
+          arch -arm64 brew install poetry mbedtls@2 aubio
     
       - name: Setup mbedtls path for osx-arm64
         id: mbedtls-path
         run: |
           echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
-          /usr/bin/clang --version
+          arch -arm64 /usr/bin/clang --version
     
       - name: Configure poetry
         id: configure-poetry
-        run: poetry config virtualenvs.in-project true 
+        run: arch -arm64 poetry config virtualenvs.in-project true 
 
       - name: Build wheel for ledfx
         id: build-ledfx
         # run: echo "::set-output name=step2value::world"
         run: |
-          poetry build
+          arch -arm64 poetry build
           
       - name: Make wheel for dependency
         id: build-whl
@@ -62,8 +62,8 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          poetry export -f requirements.txt -E hue --output requirements.txt
-          pip wheel -r requirements.txt -w ./whl
+          arch -arm64 poetry export -f requirements.txt -E hue --output requirements.txt
+          arch -arm64 pip wheel -r requirements.txt -w ./whl
           ./.venv/bin/pip install whl/*.whl
           
       - name: Upload LedFx Binary
@@ -79,21 +79,21 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          poetry install --extras hue
+          arch -arm64 poetry install --extras hue
           
       - name: Check version
         id: ceck-ver-ledfx
         run: |
-          poetry env info
+          arch -arm64 poetry env info
           echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
           echo $GITHUB_PATH
-          poetry run ledfx --version
+          arch -arm64 poetry run ledfx --version
 
       - name: Smoketest LedFx using poetry
         id: smoketest-ledfx-poetry
         run: |
-          poetry run ledfx -vv --ci-smoke-test
+          arch -arm64 poetry run ledfx -vv --ci-smoke-test
       - name: Smoketest LedFx
         id: smoketest-ledfx
         run: |
-          ledfx -vv --ci-smoke-test          
+          arch -arm64 ledfx -vv --ci-smoke-test          
