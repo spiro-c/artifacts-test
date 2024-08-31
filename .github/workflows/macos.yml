@@ -43,8 +43,8 @@ jobs:
       - name: Setup mbedtls path for osx-arm64
         id: mbedtls-path
         run: |
-#         echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
-          /usr/bin/clang --version
+         /usr/bin/clang --version
+        # echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
     
       - name: Configure poetry
         id: configure-poetry
