@@ -62,7 +62,7 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          export CFLAGS="-Wno-error=incompatible-function-pointer-type"
+          export CFLAGS="-Wno-incompatible-function-pointer-types"
           poetry export -f requirements.txt -E hue --output requirements.txt
           pip wheel -r requirements.txt -w ./whl
           ./.venv/bin/pip install whl/*.whl
