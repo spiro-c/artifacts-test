@@ -44,7 +44,7 @@ jobs:
         id: mbedtls-path
         run: |
          /usr/bin/clang --version
-        # echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
+         echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
     
       - name: Configure poetry
         id: configure-poetry
@@ -83,6 +83,7 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
+          export CFLAGS="-Wno-incompatible-function-pointer-types"
           poetry install --extras hue
           
       - name: Check version
