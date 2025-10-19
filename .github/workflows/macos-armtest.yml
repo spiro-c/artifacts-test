@@ -52,7 +52,7 @@ jobs:
         run: |
           export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
           export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          pip install ledfx
+          pip install git+https://github.com/LedFx/LedFx.git
           
       - name: Check version
         id: ceck-ver-ledfx
