@@ -1,6 +1,6 @@
 # I am a workflow that demonstrates how to output the different context objects
 
-name: Test Macos Arm64
+name: Test Macos Arm64 New Build
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
