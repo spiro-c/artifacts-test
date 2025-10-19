@@ -22,6 +22,10 @@ jobs:
 
   macos-arm:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+      fail-fast: false
     defaults:
       run:
         shell: bash -x {0}
@@ -34,7 +38,7 @@ jobs:
           repository: LedFx/LedFx
           ref: main
           
-      - name: Install poetry
+      - name: Install mbedtls
         id: instal-poetry
         # run: echo "::set-output name=step2value::world"
         run: |
@@ -46,21 +50,21 @@ jobs:
          /usr/bin/clang --version
          echo "/opt/homebrew/opt/mbedtls@2/bin" >> $GITHUB_PATH
 
-      - name: Install ledfx
-        id: install-ledfx
-        # run: echo "::set-output name=step2value::world"
-        run: |
-          export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
-          export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
-          pip install git+https://github.com/LedFx/LedFx.git
-          
-      - name: Check version
-        id: ceck-ver-ledfx
-        run: |
-          echo $GITHUB_PATH
-          ledfx --version
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: Smoketest LedFx
-        id: smoketest-ledfx
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install LedFx
         run: |
-          ledfx -vv --ci-smoke-test          
+            export LDFLAGS="-L/opt/homebrew/opt/mbedtls@2/lib"
+            export CPPFLAGS="-I/opt/homebrew/opt/mbedtls@2/include"
+            uv sync --all-extras --dev
+
+      - name: Check LedFx launches
+        run: |
+          uv run ledfx --ci-smoke-test -vv -c debug_config --offline      
