@@ -67,8 +67,8 @@ jobs:
         with:
           enable-cache: true      
     
-      - name: Set up 🐍 Python ${{  env.DEFAULT_PYTHON }
-        run: uv python install ${{  env.DEFAULT_PYTHON }} # Action to set up Python
+      - name: Set up 🐍 Python ${{ env.DEFAULT_PYTHON }
+        run: uv python install ${{ env.DEFAULT_PYTHON }} # Action to set up Python
       - name: Build a binary wheel and a source tarball
         run: uv build --sdist --force-pep517 # Command to build the package
     
