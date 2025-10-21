@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }} # Use the 'os' variable from the matrix
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel] # Define operating systems
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest, macos-15-intel] # Define operating systems
         python-version: ["3.10", "3.11", "3.12", "3.13"] # Define Python versions
 
     steps:
