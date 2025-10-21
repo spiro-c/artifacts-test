@@ -32,7 +32,12 @@ jobs:
         with:
           repository: LedFx/aubio-ledfx
           ref: master
-      
+    
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7 # Action to set up uv
+        with:
+          enable-cache: true      
+    
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }} # Action to set up Python
       - name: Build a binary wheel and a source tarball
