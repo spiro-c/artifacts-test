@@ -22,6 +22,9 @@ jobs:
   build:
     name: Build aubio-Ledfx distribution 📦 on ${{ matrix.os }} with 🐍 Python ${{ matrix.python-version }} 
     runs-on: ${{ matrix.os }} # Use the 'os' variable from the matrix
+    defaults:
+      run:
+        shell: bash -x {0}  # Enable bash debugging for better logs
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest, macos-15-intel] # Define operating systems
@@ -51,7 +54,7 @@ jobs:
             path: dist/
   build-sdist:
     name: >-
-      Build aubio-Ledfx distribution 📦 
+      Build aubio-Ledfx sdist 📦
     runs-on: ubuntu-latest
     env:
       DEFAULT_PYTHON: 3.12
@@ -69,7 +72,7 @@ jobs:
     
       - name: Set up 🐍 Python ${{ env.DEFAULT_PYTHON }}
         run: uv python install ${{ env.DEFAULT_PYTHON }} # Action to set up Python
-        
+
       - name: Build a binary wheel and a source tarball
         run: uv build --sdist --force-pep517 # Command to build the package
     
