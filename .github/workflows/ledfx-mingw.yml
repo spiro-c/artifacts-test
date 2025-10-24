@@ -56,7 +56,7 @@ jobs:
               mingw-w64-x86_64-waf
               mingw-w64-x86_64-fftw
               mingw-w64-x86_64-rubberband
-              mingw-w64-x86_64-ffmpeg7.1
+              mingw-w64-x86_64-ffmpeg
       - name: Build Aubio
         run: |
           waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
