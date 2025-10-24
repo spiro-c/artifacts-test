@@ -69,22 +69,17 @@ jobs:
             cache: 'pip' # caching pip dependencies
       - name: Install build tooling
         run: |
+          export CYGPATH=$(cygpath -m /)
+          echo "Cygpath: $CYGPATH"
           python -m pip install --upgrade pip build setuptools wheel cibuildwheel==2.* auditwheel delocate
-          
+
       - name: Build Aubio
         run: |
           waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
           waf build
           waf install
           mv ${MINGW_PREFIX}/lib/*.dll ${MINGW_PREFIX}/bin/
-      - uses: actions/setup-python@v6
-        name: Install Setup Python for Build Tooling
-        with:
-            python-version: ${{ env.DEFAULT_PYTHON }}
-            cache: 'pip' # caching pip dependencies
-      - name: Install build tooling
-        run: |
-          python -m pip install --upgrade pip build setuptools wheel cibuildwheel==2.* auditwheel delocate
+
       - name: Build wheels with cibuildwheel
         env:
           CIBW_PRINT_BUILD_OUTPUT: 1
