@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest] # Define operating systems
-        python-version: ["3.10", "3.11", "3.12", "3.13"] # Define Python versions
+        python-version: ["3.12"] # Define Python versions
 
     steps:
       - name: Checkout code from GitHub
@@ -55,6 +55,7 @@ jobs:
               mingw-w64-x86_64-libsamplerate
               mingw-w64-x86_64-python
               mingw-w64-x86_64-waf
+              mingw-w64-fftw
       - name: Build Aubio
         run: |
           waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --disable-docs --disable-tests --notests
