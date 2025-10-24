@@ -55,10 +55,11 @@ jobs:
               mingw-w64-x86_64-libsamplerate
               mingw-w64-x86_64-python
               mingw-w64-x86_64-waf
-              mingw-w64-fftw
+              mingw-w64-x86_64-fftw
+              mingw-w64-x86_64-rubberband
       - name: Build Aubio
         run: |
-          waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --disable-docs --disable-tests --notests
+          waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
           waf build
           waf install
           mv ${MINGW_PREFIX}/lib/*.dll ${MINGW_PREFIX}/bin/
