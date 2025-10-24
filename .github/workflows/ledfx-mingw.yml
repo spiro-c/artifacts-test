@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }} # Use the 'os' variable from the matrix
     defaults:
       run:
-        shell: msys2 -x {0}  # Enable bash debugging for better logs
+        shell: bash -x {0}  # Enable bash debugging for better logs
     strategy:
       matrix:
         os: [windows-latest] # Define operating systems
