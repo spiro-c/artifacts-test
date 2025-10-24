@@ -1,0 +1,116 @@
+# I am a workflow that demonstrates how to output the different context objects
+
+name: Test aubio-Ledfx MinGW Build
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    name: Build aubio-Ledfx distribution 📦 on ${{ matrix.os }} with 🐍 Python ${{ matrix.python-version }} 
+    runs-on: ${{ matrix.os }} # Use the 'os' variable from the matrix
+    defaults:
+      run:
+        shell: msys2 -x {0}  # Enable bash debugging for better logs
+    strategy:
+      matrix:
+        os: [windows-latest] # Define operating systems
+        python-version: ["3.10", "3.11", "3.12", "3.13"] # Define Python versions
+
+    steps:
+      - name: Checkout code from GitHub
+        uses: actions/checkout@v5 # Checkout your repository
+        with:
+          repository: LedFx/aubio-ledfx
+          ref: master
+    
+      - name: Set up Build Environment 
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: |
+              git
+              make
+              zip
+              unzip
+              base-devel
+              mingw-w64-x86_64-gcc
+              mingw-w64-x86_64-go
+              mingw-w64-x86_64-pkg-config
+              mingw-w64-x86_64-cmake
+              mingw-w64-x86_64-libsamplerate
+              mingw-w64-x86_64-python
+              mingw-w64-x86_64-waf
+      - name: Build Aubio
+        run: |
+          waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --disable-docs --disable-tests --notests
+          waf build
+          waf install
+          mv ${MINGW_PREFIX}/lib/*.dll ${MINGW_PREFIX}/bin/
+#   build-sdist:
+#     name: >-
+#       Build aubio-Ledfx sdist 📦
+#     runs-on: ubuntu-latest
+#     env:
+#       DEFAULT_PYTHON: 3.12
+#     steps:
+#       - name: Checkout code from GitHub
+#         uses: actions/checkout@v5 # Checkout your repository
+#         with:
+#           repository: LedFx/aubio-ledfx
+#           ref: master
+    
+#       - name: Install uv
+#         uses: astral-sh/setup-uv@v7 # Action to set up uv
+#         with:
+#           enable-cache: true      
+    
+#       - name: Set up 🐍 Python ${{ env.DEFAULT_PYTHON }}
+#         run: uv python install ${{ env.DEFAULT_PYTHON }} # Action to set up Python
+
+#       - name: Build a binary wheel and a source tarball
+#         run: uv build --sdist --force-pep517 # Command to build the package
+    
+#       - name: Store the distribution packages with 🐍 Python ${{ env.DEFAULT_PYTHON }}
+#         uses: actions/upload-artifact@v4
+#         with:
+#             name: python-package-distributions-sdist
+#             path: dist/
+
+#   publish-to-pypi:
+#     name: >-
+#       Publish Python 🐍 distribution 📦 to PyPI
+# #    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+#     needs: [build, build-sdist]
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: pypi
+#       url: https://pypi.org/p/<package-name>  # Replace <package-name> with your PyPI project name
+#     permissions:
+#       id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+#     steps:
+#     - name: Download all the dists
+#       uses: actions/download-artifact@v5
+#       with:
+#         pattern: python-package-distributions-*
+#         path: dist/
+#         merge-multiple: true
+#     # - name: Publish distribution 📦 to PyPI
+#     #   uses: pypa/gh-action-pypi-publish@release/v1
+#     - name: List files in dist/
+#       run: ls -la dist/
