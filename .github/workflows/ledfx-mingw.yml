@@ -29,7 +29,8 @@ jobs:
       matrix:
         os: [windows-latest] # Define operating systems
         python-version: ["3.12"] # Define Python versions
-
+    env:
+      CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
     steps:
       - name: Checkout code from GitHub
         uses: actions/checkout@v5 # Checkout your repository
