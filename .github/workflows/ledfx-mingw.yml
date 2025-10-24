@@ -57,12 +57,30 @@ jobs:
               mingw-w64-x86_64-fftw
               mingw-w64-x86_64-rubberband
               mingw-w64-x86_64-ffmpeg
+              mingw-w64-x86_64-python3.12
+              mingw-w64-x86_64-python-pip
+
       - name: Build Aubio
         run: |
           waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
           waf build
           waf install
           mv ${MINGW_PREFIX}/lib/*.dll ${MINGW_PREFIX}/bin/
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip build setuptools wheel cibuildwheel==2.* auditwheel delocate
+      - name: Build wheels with cibuildwheel
+        env:
+          CIBW_PRINT_BUILD_OUTPUT: 1
+          # Export environment for builds so the python extension can find the staged libaubio
+          # CIBW_ENVIRONMENT: 'PKG_CONFIG_PATH="$PWD/build/dist/usr/local/lib/pkgconfig:$PWD/build/dist/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH" CFLAGS="-I$PWD/build/dist/usr/local/include:$CFLAGS" LDFLAGS="-L$PWD/build/dist/usr/local/lib -L$PWD/build/dist/usr/local/lib64 -Wl,-rpath,$PWD/build/dist/usr/local/lib -Wl,-rpath,$PWD/build/dist/usr/local/lib64:$LDFLAGS" LD_LIBRARY_PATH="$PWD/build/dist/usr/local/lib:$PWD/build/dist/usr/local/lib64:$LD_LIBRARY_PATH"'
+          CIBW_ENVIRONMENT_MACOS: 'MACOSX_DEPLOYMENT_TARGET="15.0"'
+        run: |
+          python -m cibuildwheel --output-dir dist
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist/
 #   build-sdist:
 #     name: >-
 #       Build aubio-Ledfx sdist 📦
