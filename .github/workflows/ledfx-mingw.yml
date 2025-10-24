@@ -75,6 +75,7 @@ jobs:
 
       - name: Build Aubio
         run: |
+          export CYGPATH=$(cygpath -m /)
           waf configure --prefix=${MINGW_PREFIX} --check-c-compiler=gcc --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
           waf build
           waf install
