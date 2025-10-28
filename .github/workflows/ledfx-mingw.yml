@@ -31,7 +31,7 @@ jobs:
         python-version: ["3.12"] # Define Python versions
     env:
       CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
-      VCPKG_ROOT: ${{ env.VCPKG_INSTALLATION_ROOT }}
+      VCPKG_ROOT: $VCPKG_INSTALLATION_ROOT
       DEFAULT_PYTHON: 3.12
       CFLAGS: "-O3"
     steps:
