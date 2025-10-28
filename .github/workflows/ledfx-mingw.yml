@@ -55,7 +55,6 @@ jobs:
         run: |
             vcpkg install fftw3[double]:x64-windows
             vcpkg install libsndfile:x64-windows
-            vcpkg install ffmpeg[avcodec]:x64-windows
             vcpkg install rubberband:x64-windows
 
       - name: Set up pkg-config
