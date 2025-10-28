@@ -68,7 +68,6 @@ jobs:
         run: |
             curl -fsSL -o waf https://waf.io/waf-2.0.27
             chmod +x waf
-            ./waf configure -v
 
       - name: Build Aubio
         run: |
