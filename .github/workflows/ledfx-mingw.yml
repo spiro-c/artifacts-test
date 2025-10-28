@@ -53,12 +53,12 @@ jobs:
             curl -fsSL -o waf https://waf.io/waf-2.0.27
             chmod +x waf
             ./waf configure -v
-            
+
       - name: Build Aubio
         run: |
-          waf configure --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
-          waf build
-          waf install
+          ./waf configure --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
+          ./waf build
+          ./waf install
 
       # - name: Build wheels with cibuildwheel
       #   env:
