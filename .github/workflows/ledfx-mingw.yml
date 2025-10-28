@@ -41,6 +41,10 @@ jobs:
           repository: LedFx/aubio-ledfx
           ref: master
 
+      - name: Update Path for Windows
+        run: |
+            echo "$env:VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
+            echo "$env:PATH=$env:VCPKG_ROOT;$env:PATH" >> $env:GITHUB_PATH
       - uses: actions/setup-python@v6
         name: Install Setup Python for Build Tooling
         with:
@@ -49,9 +53,7 @@ jobs:
       - name: Install build tooling
         run: |
           python -m pip install --upgrade pip build setuptools wheel cibuildwheel==2.* auditwheel delocate
-      - name: Update Path for Windows
-        run: |
-            "$env:VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
+
       - name: vcpkg integration
         run: |
             vcpkg install fftw3[double]:x64-windows
