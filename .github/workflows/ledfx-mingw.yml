@@ -51,7 +51,7 @@ jobs:
           python -m pip install --upgrade pip build setuptools wheel cibuildwheel==2.* auditwheel delocate
       - name: Update Path for Windows
         run: |
-            $env:VCPKG_ROOT = "C:\vcpkg" >> $env:GITHUB_ENV
+            "$env:VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
       - name: vcpkg integration
         run: |
             vcpkg install fftw3[double]:x64-windows
