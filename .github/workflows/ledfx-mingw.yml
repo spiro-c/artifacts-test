@@ -74,9 +74,9 @@ jobs:
 
       - name: Build Aubio
         run: |
-          waf configure --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
-          waf build
-          waf install
+          python waf configure --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
+          python waf build
+          python waf install
 
       # - name: Build wheels with cibuildwheel
       #   env:
