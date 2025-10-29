@@ -59,7 +59,7 @@ jobs:
             vcpkg install fftw3:x64-windows
             vcpkg install pkgconf:x64-windows
             # vcpkg install libsndfile:x64-windows
-            # vcpkg install rubberband:x64-windows
+            vcpkg install rubberband:x64-windows
             vcpkg integrate install
 
       - name: Set up pkg-config
@@ -74,7 +74,7 @@ jobs:
 
       - name: Build Aubio
         run: |
-          python waf configure --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --disable-docs --disable-tests --notests
+          python waf configure --with-target-platform=win64 --enable-fftw3 --enable-rubberband --disable-docs --disable-tests --notests
       - name: Build Aubio
         run: |
           python waf build
