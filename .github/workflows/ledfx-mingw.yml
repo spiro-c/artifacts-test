@@ -57,6 +57,7 @@ jobs:
       - name: vcpkg integration
         run: |
             vcpkg install fftw3:x64-windows
+            vcpkg install pkgconf:x64-windows
             # vcpkg install libsndfile:x64-windows
             # vcpkg install rubberband:x64-windows
             vcpkg integrate install
