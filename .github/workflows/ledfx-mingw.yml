@@ -139,23 +139,23 @@ jobs:
       # - name: Verify pkg-config
       #   run: pkg-config --version
 
-      # - name: Get Waf build system
-      #   run: |
-      #       curl -fsSL -o waf https://waf.io/waf-2.0.27
-      #       chmod +x waf
+      - name: Get Waf build system
+        run: |
+            curl -fsSL -o waf https://waf.io/waf-2.0.27
+            chmod +x waf
 
-      # - name: Build Aubio
-      #   run: |
-      #     vcpkg integrate install
-      #     python waf configure --with-target-platform=win64 --enable-fftw3 --enable-rubberband --disable-docs --disable-tests --notests
-      # - name: Build Aubio
-      #   run: |
-      #     vcpkg integrate install
-      #     python waf build
-      # - name: Build Aubio
-      #   run: |
-      #     vcpkg integrate install
-      #     python waf install
+      - name: Build Aubio
+        run: |
+          vcpkg integrate install
+          python waf configure --with-target-platform=win64 --enable-fftw3 --enable-rubberband --disable-docs --disable-tests --notests
+      - name: Build Aubio
+        run: |
+          vcpkg integrate install
+          python waf build
+      - name: Build Aubio
+        run: |
+          vcpkg integrate install
+          python waf install
 
       # - name: Build wheels with cibuildwheel
       #   env:
