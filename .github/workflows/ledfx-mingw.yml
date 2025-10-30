@@ -131,10 +131,10 @@ jobs:
             vcpkg install libvorbis:x64-windows
             vcpkg integrate install
 
-      # - name: Set up pkg-config
-      #   run: |
-      #     "$env:VCPKG_ROOT/installed/x64-windows/bin" >> $env:GITHUB_PATH
-      #     "PKG_CONFIG_PATH=$env:VCPKG_ROOT/installed/x64-windows/lib/pkgconfig;$env:VCPKG_ROOT/installed/x64-windows/share/pkgconfig" >> $env:GITHUB_ENV
+      - name: Set up pkg-config
+        run: |
+          "$env:VCPKG_ROOT/installed/x64-windows/bin" >> $env:GITHUB_PATH
+          "PKG_CONFIG_PATH=$env:VCPKG_ROOT/installed/x64-windows/lib/pkgconfig;$env:VCPKG_ROOT/installed/x64-windows/share/pkgconfig" >> $env:GITHUB_ENV
 
       # - name: Verify pkg-config
       #   run: pkg-config --version
