@@ -129,6 +129,7 @@ jobs:
             vcpkg install libflac:x64-windows
             vcpkg install libogg:x64-windows
             vcpkg install libvorbis:x64-windows
+            vcpkg install pthreads:x64-windows
             vcpkg integrate install
 
       - name: Set up pkg-config
