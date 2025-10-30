@@ -26,6 +26,7 @@ jobs:
     #   run:
     #     shell: bash -x {0}  # Enable bash debugging for better logs
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest] # Define operating systems
         python-version: ["3.12"] # Define Python versions
