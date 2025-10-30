@@ -29,7 +29,7 @@ jobs:
       matrix:
         os: [windows-latest] # Define operating systems
         python-version: ["3.12"] # Define Python versions
-        vcpkg_cache: "c:\\vcpkg\\installed"
+        vcpkg_cache: ["c:\\vcpkg\\installed"]
     env:
       CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
       # VCPKG_ROOT: "C:/vcpkg"
