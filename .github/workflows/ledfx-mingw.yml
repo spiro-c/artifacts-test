@@ -29,6 +29,7 @@ jobs:
       matrix:
         os: [windows-latest] # Define operating systems
         python-version: ["3.12"] # Define Python versions
+        vcpkg_cache: "c:\\vcpkg\\installed"
     env:
       CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
       # VCPKG_ROOT: "C:/vcpkg"
@@ -40,6 +41,15 @@ jobs:
         with:
           repository: LedFx/aubio-ledfx
           ref: master
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        id: vcpkgcache
+        with:
+          path: |
+            ${{ matrix.vcpkg_cache }}
+          # bump the last digit to avoid using previous build cache
+          key: ${{ matrix.os }}-vcpkg--cache0
 
       - name: Update Path for Windows
         run: |
@@ -57,9 +67,13 @@ jobs:
       - name: vcpkg integration
         run: |
             vcpkg install fftw3:x64-windows
+            vcpkg install ffmpeg[core,avcodec,avformat,swresample]:x64-windows
             vcpkg install pkgconf:x64-windows
-            # vcpkg install libsndfile:x64-windows
+            vcpkg install libsndfile[core]:x64-windows
             vcpkg install rubberband:x64-windows
+            vcpkg install libflac:x64-windows
+            vcpkg install libogg:x64-windows
+            vcpkg install libvorbis:x64-windows
             vcpkg integrate install
 
       - name: Set up pkg-config
