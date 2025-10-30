@@ -57,6 +57,10 @@ jobs:
             "VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
             "$env:VCPKG_ROOT" >> $env:GITHUB_PATH
 
+      - name: Install vcpkg
+        run: |
+           vcpkg install pkgconf:x64-windows
+                  
       - name: Configure pkgconf for Windows
         if: runner.os == 'Windows'
         run: |
