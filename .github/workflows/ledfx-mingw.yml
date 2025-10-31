@@ -148,7 +148,7 @@ jobs:
       - name: Build Aubio
         run: |
           vcpkg integrate install
-          python waf configure --with-target-platform=win64 --enable-fftw3 --enable-rubberband --disable-docs --disable-tests --notests
+          python waf configure --with-target-platform=win64 --enable-fftw3 --enable-rubberband --disable-docs --disable-tests --notests -v
       - name: Build Aubio
         run: |
           vcpkg integrate install
