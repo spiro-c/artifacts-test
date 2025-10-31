@@ -152,7 +152,7 @@ jobs:
       - name: Build Aubio
         run: |
           vcpkg integrate install
-          python waf build
+          python waf build -v
       - name: Build Aubio
         run: |
           vcpkg integrate install
