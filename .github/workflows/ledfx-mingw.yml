@@ -148,7 +148,7 @@ jobs:
       - name: Build Aubio
         run: |
           vcpkg integrate install
-          python waf configure --with-target-platform=win64 --enable-rubberband --disable-docs --disable-tests --notests -v
+          python waf configure --prefix=$env:VCPKG_INSTALLATION_ROOT/installed/$env:VCPKG_DEFAULT_TRIPLET --with-target-platform=win64 --enable-fftw3 --enable-avcodec --enable-sndfile --enable-rubberband --jobs=2 --disable-docs --disable-tests --notests -v
       - name: Build Aubio
         run: |
           vcpkg integrate install
@@ -156,7 +156,7 @@ jobs:
       - name: Build Aubio
         run: |
           vcpkg integrate install
-          python waf install
+          python waf install -v
 
       # - name: Build wheels with cibuildwheel
       #   env:
