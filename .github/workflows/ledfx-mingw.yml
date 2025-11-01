@@ -148,7 +148,7 @@ jobs:
       - name: Build Aubio
         run: |
           vcpkg integrate install
-          python waf configure --prefix=$env:VCPKG_INSTALLATION_ROOT/installed/$env:VCPKG_DEFAULT_TRIPLET --enable-avcodec --enable-sndfile --enable-rubberband --jobs=2 --disable-docs --disable-tests --notests -v
+          python waf configure --prefix=$env:VCPKG_INSTALLATION_ROOT/installed/$env:VCPKG_DEFAULT_TRIPLET --enable-avcodec --enable-sndfile --enable-rubberband --jobs=2 --disable-docs  -v
       - name: Build Aubio
         run: |
           vcpkg integrate install
