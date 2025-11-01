@@ -121,7 +121,7 @@ jobs:
 
       - name: vcpkg integration
         run: |
-            vcpkg install fftw3:x64-windows
+            vcpkg install fftw3[core,threads,sse,sse2,avx,avx2]:x64-windows --recurse
             vcpkg install ffmpeg[core,avcodec,avformat,swresample]:x64-windows
             vcpkg install pkgconf:x64-windows
             vcpkg install libsndfile[core]:x64-windows
@@ -131,6 +131,7 @@ jobs:
             vcpkg install libvorbis:x64-windows
             vcpkg install pthreads:x64-windows
             vcpkg integrate install
+            vcpkg list
 
       - name: Set up pkg-config
         run: |
