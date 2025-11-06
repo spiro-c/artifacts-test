@@ -137,6 +137,8 @@ jobs:
       - name: Set up pkg-config
         run: |
           "$env:VCPKG_ROOT/installed/x64-windows/bin" >> $env:GITHUB_PATH
+          "$env:CFLAGS="-I$env:VCPKG_ROOT/installed/x64-windows/include" >> $env:GITHUB_ENV
+          "$env:LDFLAGS="-L$env:VCPKG_ROOT/installed/x64-windows/lib" >> $env:GITHUB_ENV
           "PKG_CONFIG_PATH=$env:VCPKG_ROOT/installed/x64-windows/lib/pkgconfig;$env:VCPKG_ROOT/installed/x64-windows/share/pkgconfig" >> $env:GITHUB_ENV
 
       # - name: Verify pkg-config
