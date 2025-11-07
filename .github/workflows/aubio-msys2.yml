@@ -72,7 +72,7 @@ jobs:
       - name: Build a binary wheel 📦 for ${{ matrix.os }}-py${{ matrix.python-version }}
         run: |
           export CC=gcc 
-          uv build --wheel --force-pep517 # Command to build the package
+          CC=gcc CXX=g++ uv build --wheel --force-pep517 # Command to build the package
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
